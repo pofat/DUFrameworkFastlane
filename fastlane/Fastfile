@@ -39,9 +39,10 @@ lane :ci_commit do |options|
 
   build_example(configuration: configuration)
 
-  # af_pod_spec_lint(
-  #   quick:true
-  # )
+  af_pod_spec_lint(
+     quick:true,
+     allow_warnings:true
+  )
 end
 
 desc "Builds the example file"
@@ -156,7 +157,7 @@ lane :prepare_framework_release do |options|
     release_branch: "release-#{options[:version]}"
   )
 
-  #Update the framework plist
+  # Bump version number
   if options[:skip_plist_update] != true
     plist_path = options[:plist_path] ? options[:plist_path] : ENV["DEPLOY_PLIST_PATH"]
     set_info_plist_value(
@@ -166,12 +167,17 @@ lane :prepare_framework_release do |options|
     )
   end
 
-  #Update the podspec
+  #Update the podspec and lint the podspec
   if options[:skip_podspec_update] != true
     podspec = options[:podpsec] ? options[:podpsec] : ENV["DEPLOY_PODSPEC"]
     version_bump_podspec(
       path: podspec,
       version_number: options[:version]
+    )
+
+    af_pod_spec_lint(
+       quick:true,
+       allow_warnings:true
     )
 
   end
