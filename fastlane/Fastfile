@@ -39,9 +39,9 @@ lane :ci_commit do |options|
 
   build_example(configuration: configuration)
 
-  af_pod_spec_lint(
-    quick:true
-  )
+  # af_pod_spec_lint(
+  #   quick:true
+  # )
 end
 
 desc "Builds the example file"
