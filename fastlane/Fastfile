@@ -90,7 +90,7 @@ desc ""
 lane :podspec_lint do |options|
   if options[:allow_warnings]
     af_pod_spec_lint(
-      quick:true
+      allow_warnings:true
     )
   else
     af_pod_spec_lint()
