@@ -164,7 +164,7 @@ lane :prepare_framework_release do |options|
     plist_path = options[:plist_path] ? options[:plist_path] : ENV["DEPLOY_PLIST_PATH"]
     set_info_plist_value(
       path: plist_path,
-      key: "CFBundleVersion",
+      key: "CFBundleShortVersionString",
       value: options[:version]
     )
   end
