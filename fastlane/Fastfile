@@ -80,3 +80,19 @@ lane :code_coverage do |options|
     )
   end
 end
+
+desc "Lint a podspec file"
+desc "####Example:"
+desc "```\nfastlane podspec_lint allow_warnings:true\n```"
+desc "####Options"
+desc " * **`configuration`**: The build configuration to use. The only supported configuration is the `Debug` configuration."
+desc ""
+lane :podspec_lint do |options|
+  if options[:allow_warnings]
+    af_pod_spec_lint(
+      quick:true
+    )
+  else
+    af_pod_spec_lint()
+  end
+end
