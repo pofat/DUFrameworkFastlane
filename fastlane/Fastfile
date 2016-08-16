@@ -1,5 +1,5 @@
 # If you want to update latest version automatically
-update_fastlane
+# update_fastlane
 # Minimum version required
 fastlane_version "1.98.0"
 
