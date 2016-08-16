@@ -1,7 +1,9 @@
-# If you want to update latest version automatically
-# update_fastlane
 # Minimum version required
 fastlane_version "1.98.0"
+# Set up Slack incoming webhook
+before_all do
+  ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
+end
 
 #Test Lanes
 desc "Runs all tests for the given environment"
@@ -227,4 +229,78 @@ lane :prepare_framework_release do |options|
   else
     Helper.log.info "When finished, commit your changes and create your tag.".red
   end
+end
+
+desc "Completes the framework release"
+desc "This lane should be from a CI machine, after the tests have passed on the tag build. This lane does the following:"
+desc " * Verifies the git branch is clean"
+desc " * Ensures the lane is running on the master branch"
+desc " * Pulls the remote to verify the latest the branch is up to date"
+desc " * Creates a Github Release"
+desc " * Pushes podspec to pod trunk"
+desc " * Lints the pod spec to ensure it is valid"
+desc "####Example:"
+desc "```\nfastlane complete_framework_release --env deploy\n```"
+desc "####Options"
+desc "It is recommended to manage these options through a .env file. See `fastlane/.env.deploy` for an example."
+desc " * **`version`** (required): The new version of the framework. Defaults to the last tag in the repo"
+desc " * **`allow_dirty_branch`**: Allows the git branch to be dirty before continuing. Defaults to false"
+desc " * **`remote`**: The name of the git remote. Defaults to `origin`. (`DEPLOY_REMOTE`)"
+desc " * **`allow_branch`**: The name of the branch to build from. Defaults to `master`. (`DEPLOY_BRANCH`)"
+desc " * **`skip_github_release`**: Skips creating a Github release. Defaults to false"
+desc " * **`skip_pod_push`**: Skips pushing the podspec to trunk."
+desc " * **`skip_podspec_update`**: Skips updating the version of the podspec. Defaults to false"
+desc ""
+lane :complete_framework_release do |options|
+  if options[:skip_ci_check] != true
+    if !is_ci
+      raise "#{lane_context[SharedValues::LANE_NAME]} should be run from a CI machine. If you want to override this, pass 'skip_ci_check:true'".red
+    end
+  end
+
+  version = options[:version] ? options[:version] : last_git_tag.strip
+  Helper.log.info "Using version #{version}"
+
+  #Ensure clean branch
+  if options[:allow_dirty_branch] != true
+    ensure_git_status_clean
+  end
+
+  remote = options[:remote] ? options[:remote] : (ENV["DEPLOY_REMOTE"] ? ENV["DEPLOY_REMOTE"] : "origin")
+  allowed_branch = options[:allow_branch] ? options[:allow_branch] : (ENV["DEPLOY_END_BRANCH"] ? ENV["DEPLOY_END_BRANCH"] : "master")
+
+  #Ensure we are on the right branch
+  ensure_git_branch(
+    branch:allowed_branch
+  )
+
+  #Pull the latest to ensure we are up to date
+  if options[:skip_git_pull] != true
+    sh("git pull #{remote} #{allowed_branch}")
+  end
+
+  #pod trunk push
+  if options[:skip_pod_push] != true
+    pod_push
+
+    #pod spec lint
+    af_pod_spec_lint
+  end
+
+end
+
+after_all do |lane|
+  # This block is called, only if the executed lane was successful
+
+  slack(
+    message: "Successfully deployed new version of framework."
+  )
+end
+
+error do |lane, exception|
+  # This block is called when error happened
+  slack(
+    message: exception.message,
+    success: false
+  )
 end
