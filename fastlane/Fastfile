@@ -1,9 +1,9 @@
 # Minimum version required
 fastlane_version "1.98.0"
 # Set up Slack incoming webhook
-before_all do
-  ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
-end
+# before_all do
+#  ENV["SLACK_URL"] = "https://hooks.slack.com/services/XXXXXXXX"
+# end
 
 #Test Lanes
 desc "Runs all tests for the given environment"
@@ -247,7 +247,6 @@ desc " * **`version`** (required): The new version of the framework. Defaults to
 desc " * **`allow_dirty_branch`**: Allows the git branch to be dirty before continuing. Defaults to false"
 desc " * **`remote`**: The name of the git remote. Defaults to `origin`. (`DEPLOY_REMOTE`)"
 desc " * **`allow_branch`**: The name of the branch to build from. Defaults to `master`. (`DEPLOY_BRANCH`)"
-desc " * **`skip_github_release`**: Skips creating a Github release. Defaults to false"
 desc " * **`skip_pod_push`**: Skips pushing the podspec to trunk."
 desc " * **`skip_podspec_update`**: Skips updating the version of the podspec. Defaults to false"
 desc ""
