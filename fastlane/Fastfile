@@ -291,15 +291,15 @@ end
 after_all do |lane|
   # This block is called, only if the executed lane was successful
 
-  slack(
-    message: "Successfully completed a lane."
-  )
+#  slack(
+#    message: "Successfully completed a lane."
+#  )
 end
 
 error do |lane, exception|
   # This block is called when error happened
-  slack(
-    message: exception.message,
-    success: false
-  )
+#  slack(
+#    message: exception.message,
+#    success: false
+#  )
 end
