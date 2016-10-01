@@ -189,7 +189,7 @@ lane :prepare_framework_release do |options|
     # commit the branch
     git_commit(
       path: ".",
-      message: "Preparing for the #{options[:version]} release"
+      message: "docs(version): Prepare to release #{options[:version]}"
     )
 
     # check out to master and merge the release branch
