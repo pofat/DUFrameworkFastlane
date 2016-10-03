@@ -66,6 +66,35 @@ lane :build_example do |options|
   )
 end
 
+# Archive
+desc "Produces an archive"
+desc "Build on simulator first"
+desc "Do an archive with post action to generate archived framework file in `_Archive`"
+desc ""
+lane :archive do |options|
+  # clean project
+  xcclean(
+    workspace: ENV["DU_WORKSPACE"],
+    scheme: ENV["DU_IOS_FRAMEWORK_SCHEME"]
+  )
+  # build for simulator
+  xcodebuild(
+    workspace: ENV["DU_WORKSPACE"],
+    scheme: ENV["DU_IOS_FRAMEWORK_SCHEME"],
+    build: true,
+    destination: ENV["DU_IOS_BUILD_DESTINATION"],
+    configuration: options[:configuration],
+    build_settings: [["ONLY_ACTIVE_ARCH", "NO"]]
+  )
+  # archive
+  xcodebuild(
+    archive: true,
+    archive_path: './build-dir/DUMessaging.xcarchive',
+    scheme: 'DUMessaging',
+    workspace: 'DUMessaging.xcworkspace'
+  )
+end
+
 desc "Generate code coverage information"
 desc "Set `scan` action environment variables to control test configuration"
 desc "####Example:"
